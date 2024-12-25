@@ -119,6 +119,8 @@ import time
 import micropython
 from machine import ADC, Pin
 
+POWERMANAGEMENT = True
+
 display.set_backlight(1.0)
 BACKLIGHT_LOW = micropython.const(0.375)
 BACKLIGHT_HIGH = micropython.const(1.0)
@@ -161,7 +163,7 @@ def measure_battery() -> (float, bool, bool):
 
 backlight = BACKLIGHT_LOW
 print("entering backlight loop")
-while True:
+while POWERMANAGEMENT:
     # Turn on VREF and LUX only while we measure things.
     lux_vref_pwr.value(1)
     (vbat, on_usb, low_battery) = measure_battery()

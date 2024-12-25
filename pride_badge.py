@@ -3,6 +3,8 @@
 from picographics import PicoGraphics, DISPLAY_TUFTY_2040
 import math
 
+POWERMANAGEMENT = True
+
 display = PicoGraphics(display=DISPLAY_TUFTY_2040)
 
 WIDTH, HEIGHT = display.get_bounds()
@@ -172,7 +174,7 @@ def measure_battery() -> (float, bool, bool):
 
 backlight = BACKLIGHT_LOW
 print("entering backlight loop")
-while True:
+while POWERMANAGEMENT:
     # Turn on VREF and LUX only while we measure things.
     lux_vref_pwr.value(1)
     (vbat, on_usb, low_battery) = measure_battery()
