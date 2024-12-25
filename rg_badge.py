@@ -58,7 +58,7 @@ except:
 
 # Change the colour of the text (swapping these works better on a light background)
 NAME_COLOUR = CYAN
-PRONOUNS_COLOUR = INDIGO
+PRONOUNS_COLOUR = AMETHYST
 SOCIAL_COLOUR = AMETHYST
 
 #DROP_SHADOW_COLOUR = BLACK
@@ -76,11 +76,6 @@ while True:
     if name_length >= WIDTH - 20:
         name_size -= 1
     else:
-        # scale down further so pronouns fit
-        name_size -= 2
-        name_length = display.measure_text(name, name_size)
-        pronouns_size = name_size-1
-        
         # comment out this section if you hate drop shadow
         #DROP_SHADOW_OFFSET = 5
         #display.set_pen(DROP_SHADOW_COLOUR)
@@ -88,18 +83,18 @@ while True:
 
         # draw name and stop looping
         display.set_pen(NAME_COLOUR)
-        display.text(name, int((WIDTH - name_length) / 2 + 10), 0, WIDTH, name_size)
+        display.text(name, int((WIDTH - name_length) / 2), 0, WIDTH, name_size)
         break
 
 while True:
     display.set_font("bitmap8")
     pronouns_length = display.measure_text(pronouns, pronouns_size)
-    if pronouns_length >= WIDTH - 60:
+    if pronouns_length >= WIDTH/2-20:
         pronouns_size -= 1
     else:
         # draw pronouns and stop looping
         display.set_pen(PRONOUNS_COLOUR)
-        display.text(pronouns, int((WIDTH - pronouns_length) / 2), 0+(name_size*8), WIDTH, pronouns_size)
+        display.text(pronouns, WIDTH - pronouns_length, 0+(name_size*8), WIDTH, pronouns_size)
         break
 
 while True:
