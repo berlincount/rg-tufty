@@ -1,11 +1,18 @@
 from picographics import PicoGraphics, DISPLAY_TUFTY_2040
 import pngdec
 
+### Overridables
 POWERMANAGEMENT = True
+LED_GLIMMER = True
+
+LOGO_OFFSET_Y = 20
+
+NAME_MAX_SIZE = 8
+PRONOUNS_MAX_SIZE = 20
+SOCIAL_MAX_SIZE = 20
+###
 
 display = PicoGraphics(display=DISPLAY_TUFTY_2040)
-png = pngdec.PNG(display)
-
 WIDTH, HEIGHT = display.get_bounds()
 
 # List of available pen colours, add more if necessary
@@ -25,10 +32,11 @@ CYAN = display.create_pen(33, 177, 255)
 AMETHYST = display.create_pen(156, 89, 209)
 
 # load logo
+png = pngdec.PNG(display)
 try:
     png.open_file("rg_badge.png")
     # Decode our PNG file (320x240) to whole of screen
-    png.decode(0, 0)
+    png.decode(0, LOGO_OFFSET_Y)
 except OSError:
     print("rg_badge.png missing")
 
@@ -65,9 +73,9 @@ SOCIAL_COLOUR = AMETHYST
 
 # Set a starting scale for text size.
 # This is intentionally bigger than will fit on the screen, we'll shrink it to fit.
-name_size = 20
-pronouns_size = 20
-social_size = 20
+name_size = NAME_MAX_SIZE
+pronouns_size = PRONOUNS_MAX_SIZE
+social_size = SOCIAL_MAX_SIZE
 
 # These loops adjust the scale of the text until it fits on the screen
 while True:
@@ -115,7 +123,10 @@ display.update()
 # automatic backlight management
 import time
 import micropython
-from machine import ADC, Pin
+from machine import ADC, Pin, PWM
+
+pwm = PWM(Pin(25))
+pwm.freq(1000)
 
 display.set_backlight(1.0)
 BACKLIGHT_LOW = micropython.const(0.375)
@@ -142,6 +153,7 @@ def auto_brightness(previous: float) -> (float, float):
     backlight = previous + (backlight_diff * (1.0 / 32.0))
     return (luminance, backlight)
 
+low_battery = False
 
 # Returns a tuple of voltage (fake value if on USB), "is on USB", and "is low".
 def measure_battery() -> (float, bool, bool):
@@ -158,8 +170,8 @@ def measure_battery() -> (float, bool, bool):
     return (vbat, False, low_battery)
 
 backlight = BACKLIGHT_LOW
-print("entering backlight loop")
-while POWERMANAGEMENT:
+def powman():
+    global luminance,backlight,vbat,on_usb,low_battery
     # Turn on VREF and LUX only while we measure things.
     lux_vref_pwr.value(1)
     (vbat, on_usb, low_battery) = measure_battery()
@@ -172,5 +184,24 @@ while POWERMANAGEMENT:
     # Set the new backlight value.
     display.set_backlight(backlight)
 
-    # measure every 100ms
+print("entering backlight loop")
+while POWERMANAGEMENT and not low_battery:
+  if not LED_GLIMMER:
+    # measure only every 100ms
+    powman()
     time.sleep(0.1)
+  else:
+    # measure roughly every 100ms, fade the LED in the meantime
+    for duty in range(65025):
+      if duty % 1000 == 0:
+        powman()
+      pwm.duty_u16(duty)
+      time.sleep(0.0001)
+    for duty in range(65025, 0, -1):
+      if duty % 1000 == 0:
+        powman()
+      pwm.duty_u16(duty)
+      time.sleep(0.0001)
+
+print("low power, reducing backlight to min")
+display.set_backlight(BACKLIGHT_LOW)
