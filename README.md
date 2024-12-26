@@ -25,6 +25,7 @@ The following files can be uploaded directly, and will automatically show up in 
 | Filename        | Purpose                                                |
 | --------------- | ------------------------------------------------------ |
 | badge.txt       | Simple example with name, pronouns, social             |
+| button_test.py  | Button test with all buttons                           |
 | main.py         | Alternate main.py using all buttons for start          |
 | name\_badge.py  | Simple name badge with backlight management            |
 | pride\_badge.py | Pride badge with backlight management                  |
