@@ -22,12 +22,15 @@ The following files can be uploaded directly, and will automatically show up in 
 
 (if you don't want the menu, rename and replace the main.py with the app you want to boot)
 
-| Filename        | Purpose                                                |
-| --------------- | ------------------------------------------------------ |
-| badge.txt       | Simple example with name, pronouns, social             |
-| button_test.py  | Button test with all buttons                           |
-| main.py         | Alternate main.py using all buttons for start          |
-| name\_badge.py  | Simple name badge with backlight management            |
-| pride\_badge.py | Pride badge with backlight management                  |
-| rg\_badge.png   | Relationship Geeks logo background                     |
-| rg\_badge.py    | rg\_badge.png logo + badge text + backlight management |
+| Filename        | Purpose                                                  |
+| --------------- | -------------------------------------------------------- |
+| 38c3\_badge.py  | 38c3\_badge.png logo + badge text + backlight management |
+| 38c3\_badge.png | 38c3 Badge logo                                          |
+| badge.txt       | Simple example with name, pronouns, social               |
+| button_test.py  | Button test with all buttons                             |
+| main.py         | Alternate main.py using all buttons for start            |
+| manekineko.py   | Waving cat with + badge text + backlight management      |
+| name\_badge.py  | Simple name badge with backlight management              |
+| pride\_badge.py | Pride badge with backlight management                    |
+| rg\_badge.png   | Relationship Geeks logo background                       |
+| rg\_badge.py    | rg\_badge.png logo + badge text + backlight management   |
