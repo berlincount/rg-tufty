@@ -4,9 +4,6 @@ import pngdec
 
 ### Overridables
 POWERMANAGEMENT = True
-LED_GLIMMER = True
-
-LOGO_OFFSET_Y = 20
 
 NAME_MAX_SIZE = 8
 PRONOUNS_MAX_SIZE = 20
@@ -39,15 +36,6 @@ button_c = Button(9, invert=False)
 button_up = Button(22, invert=False)
 button_down = Button(6, invert=False)
 button_boot = Button(23, invert=True)
-
-# load logo
-png = pngdec.PNG(display)
-try:
-    png.open_file("rg_badge.png")
-    # Decode our PNG file (320x240) to whole of screen
-    png.decode(0, LOGO_OFFSET_Y)
-except OSError:
-    print("rg_badge.png missing")
 
 # Details are autoloaded
 try:
@@ -90,7 +78,7 @@ social_size = SOCIAL_MAX_SIZE
 while True:
     display.set_font("bitmap8")
     name_length = display.measure_text(name, name_size)
-    if name_length >= WIDTH - 20:
+    if name_length >= WIDTH/2:
         name_size -= 1
     else:
         # comment out this section if you hate drop shadow
@@ -100,29 +88,29 @@ while True:
 
         # draw name and stop looping
         display.set_pen(NAME_COLOUR)
-        display.text(name, int((WIDTH - name_length) / 2), 0, WIDTH, name_size)
+        display.text(name, int(WIDTH/2), 0, WIDTH, name_size)
         break
 
 while True:
     display.set_font("bitmap8")
     pronouns_length = display.measure_text(pronouns, pronouns_size)
-    if pronouns_length >= WIDTH/2-20:
+    if pronouns_length >= WIDTH/2:
         pronouns_size -= 1
     else:
         # draw pronouns and stop looping
         display.set_pen(PRONOUNS_COLOUR)
-        display.text(pronouns, WIDTH - pronouns_length, 0+(name_size*8), WIDTH, pronouns_size)
+        display.text(pronouns, int(WIDTH/2), 0+(name_size*8), WIDTH, pronouns_size)
         break
 
 while True:
     display.set_font("bitmap8")
     social_length = display.measure_text(social, social_size)
-    if social_length >= WIDTH - 60:
+    if social_length >= WIDTH/2+40:
         social_size -= 1
     else:
         # draw social and stop looping
         display.set_pen(SOCIAL_COLOUR)
-        display.text(social, int((WIDTH - social_length) / 2), 240-(social_size*8), WIDTH, social_size)
+        display.text(social, int(WIDTH/2)-40, 240-(social_size*8), WIDTH, social_size)
         break
 
 # Once all the adjusting and drawing is done, update the display.
@@ -202,34 +190,38 @@ def powman():
     # Set the new backlight value.
     display.set_backlight(backlight)
 
-print("entering backlight loop")
-while POWERMANAGEMENT and not low_battery:
-  if button_boot.is_pressed and not brighttimer:
-    print("setting brighttimer for 10s brightness")
-    brighttimer = time.time()+10
+print("entering loop")
+while not low_battery:
 
-  if not LED_GLIMMER:
+  for i in range(60):
+    framestart = time.time_ns()
+    display.set_pen(BLACK)
+    display.clear()
+    png = pngdec.PNG(display)
+    try:
+      png.open_file('manekineko_pngs/frame_%02d_delay-0.1s.png' % i)
+    except OSError:
+      # file not found, last frame
+      break
+    png.decode(0,0)
+
+    display.set_pen(NAME_COLOUR)
+    display.text(name, int(WIDTH/2), 0, WIDTH, name_size)
+    display.set_pen(PRONOUNS_COLOUR)
+    display.text(pronouns, int(WIDTH/2), 0+(name_size*8), WIDTH, pronouns_size)
+    display.set_pen(SOCIAL_COLOUR)
+    display.text(social, int(WIDTH/2)-40, 240-(social_size*8), WIDTH, social_size)
+ 
+    display.update()
+    
     # measure only every 100ms
-    powman()
-    time.sleep(0.1)
-  else:
-    # measure roughly every 100ms, fade the LED in the meantime
-    for duty in range(65025):
-      if duty % 1000 == 0:
-        powman()
-      pwm.duty_u16(duty)
-      time.sleep(0.0001)
-      if button_boot.is_pressed:
-        # handle immediately
-        break
-    for duty in range(65025, 0, -1):
-      if duty % 1000 == 0:
-        powman()
-      pwm.duty_u16(duty)
-      time.sleep(0.0001)
-      if button_boot.is_pressed:
-        # handle immediately
-        break
+    if POWERMANAGEMENT:
+      if button_boot.is_pressed and not brighttimer:
+        print("setting brighttimer for 10s brightness")
+        brighttimer = time.time()+10
+      powman()
+    # the slowest frame we know needs 300ms - sync speed on that one
+    time.sleep(0.3-((time.time_ns()-framestart)/1000000000))
 
 print("low power, reducing backlight to min")
 display.set_backlight(BACKLIGHT_LOW)
