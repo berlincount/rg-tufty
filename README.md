@@ -26,8 +26,10 @@ The following files can be uploaded directly, and will automatically show up in 
 | --------------- | -------------------------------------------------------- |
 | 38c3\_badge.py  | 38c3\_badge.png logo + badge text + backlight management |
 | 38c3\_badge.png | 38c3 Badge logo                                          |
+| autobright.py   | Test code for finding brightness settings                |
 | badge.txt       | Simple example with name, pronouns, social               |
-| button_test.py  | Button test with all buttons                             |
+| button\_test.py | Button test with all buttons                             |
+| includes.py     | Include file for modularity                              |
 | main.py         | Alternate main.py using all buttons for start            |
 | manekineko.py   | Waving cat with + badge text + backlight management      |
 | name\_badge.py  | Simple name badge with backlight management              |

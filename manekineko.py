@@ -4,7 +4,7 @@ from includes import *
 ### Overridables
 POWERMANAGEMENT = True
 
-BACKGROUND = BLACK
+BACKGROUND_COLOR = BLACK
 
 name_config = {
   "color": CYAN,
@@ -36,9 +36,9 @@ social_config = {
 name_config["text"], pronouns_config["text"], social_config["text"] = load_badge()
 
 # calculate sizes of texts
-name_config["size"]     = measure_text(display,name_config)
-pronouns_config["size"] = measure_text(display,pronouns_config)
-social_config["size"]   = measure_text(display,social_config)
+name_config["size"],name_config["width"]         = measure_text(display,name_config)
+pronouns_config["size"],pronouns_config["width"] = measure_text(display,pronouns_config)
+social_config["size"],social_config["width"]     = measure_text(display,social_config)
 
 # position texts relative to each other
 pronouns_config["y_pos"] = 0+(name_config["size"]*8)
@@ -57,7 +57,7 @@ display.set_backlight(1.0)
 BACKLIGHT_LOW = micropython.const(0.375)
 BACKLIGHT_HIGH = micropython.const(1.0)
 LUMINANCE_LOW = micropython.const(384)
-LUMINANCE_HIGH = micropython.const(2048)
+LUMINANCE_HIGH = micropython.const(1260)
 LOW_BATTERY_VOLTAGE = micropython.const(3.1)
 lux_vref_pwr = Pin(27, Pin.OUT)
 lux = ADC(Pin(26))
@@ -121,10 +121,10 @@ def powman():
 print("entering loop")
 import pngdec
 display.set_backlight(BACKLIGHT_HIGH)
-if not low_battery:
+while not low_battery:
   for i in range(60):
     framestart = time.time_ns()
-    display.set_pen(BACKGROUND)
+    display.set_pen(BACKGROUND_COLOR)
     display.clear()
     png = pngdec.PNG(display)
     try:
