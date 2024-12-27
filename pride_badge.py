@@ -7,16 +7,18 @@ POWERMANAGEMENT = True
 BACKGROUND_COLOR = BLACK
 
 name_config = {
+  "font": "SpaceMono-Regular",
   "color": WHITE,
-  "max_size": 20,
+  "max_size": 90,
   "max_width": WIDTH-20,
   "x_pos": WIDTH/2,
   "y_pos": 10,
 }
 
 pronouns_config = {
+  "font": "SpaceMono-Regular",
   "color": WHITE,
-  "max_size": 20,
+  "max_size": 60,
   "max_width": WIDTH-60,
   "x_pos": WIDTH/2,
   "y_pos": 175,
@@ -47,8 +49,8 @@ STRIPES_DIRECTION = "horizontal"
 name_config["text"], pronouns_config["text"], _ = load_badge()
 
 # calculate sizes of texts
-name_config["size"],name_config["width"]         = measure_text(display,name_config)
-pronouns_config["size"],pronouns_config["width"] = measure_text(display,pronouns_config)
+name_config.update(measure_text(display,name_config))
+pronouns_config.update(measure_text(display,pronouns_config))
 
 # position texts relative to each other
 name_config["x_pos"] = (WIDTH-name_config["width"])/2+10

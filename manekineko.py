@@ -36,9 +36,9 @@ social_config = {
 name_config["text"], pronouns_config["text"], social_config["text"] = load_badge()
 
 # calculate sizes of texts
-name_config["size"],name_config["width"]         = measure_text(display,name_config)
-pronouns_config["size"],pronouns_config["width"] = measure_text(display,pronouns_config)
-social_config["size"],social_config["width"]     = measure_text(display,social_config)
+name_config.update(measure_text(display,name_config))
+pronouns_config.update(measure_text(display,pronouns_config))
+social_config.update(measure_text(display,social_config))
 
 # position texts relative to each other
 pronouns_config["y_pos"] = 0+(name_config["size"]*8)
@@ -60,7 +60,7 @@ while not low_battery:
     except OSError:
       # file not found, last frame
       break
-    png.decode(0,0)
+    png.decode(0,0,mode=pngdec.PNG_COPY)
 
     draw_text(display,name_config)
     draw_text(display,pronouns_config)

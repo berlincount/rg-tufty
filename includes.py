@@ -28,26 +28,108 @@ button_up = Button(22, invert=False)
 button_down = Button(6, invert=False)
 button_boot = Button(23, invert=True)
 
-def measure_text(display,config):
-  if not "font" in config:
-    display.set_font("bitmap8")
+# vector
+vector = False
+transform = False
+def init_vector():
+  global vector,transform
+  from picovector import PicoVector, Transform, ANTIALIAS_BEST
+  vector = PicoVector(display)
+  transform = Transform()
+  vector.set_transform(transform)
+  vector.set_antialiasing(ANTIALIAS_BEST)
+  print("vector initialized")
 
+def measure_text_bitmap(display,config):
   cur_size = config["max_size"]
   while True:
     cur_width = display.measure_text(config["text"], cur_size)
-    if cur_width >= WIDTH/2:
+    if cur_width >= config["max_width"]:
       cur_size -= 1
     else:
       break
 
-  return cur_size, cur_width
+  # FIXME: the height is only correct for bitmap8
+  return {
+    "size": cur_size,
+    "width": cur_width,
+    "height": cur_size*8,
+    "x_offset": 0,
+    "y_offset": 0,
+  }
+
+def measure_text(display,config):
+  if not "font" in config:
+    display.set_font("bitmap8")
+    return measure_text_bitmap(display,config)
+  elif config["font"].startswith("bitmap"):
+    display.set_font(config["font"])
+    return measure_text_bitmap(display,config)
+
+  if not vector or not transform:
+    init_vector()
+
+  cur_size = config["max_size"]
+
+  fontfile = "fonts/"+config["font"]+".af"
+  try:
+    vector.set_font(fontfile,cur_size)
+  except OSError:
+    print("font file %s could not be loaded" % fontfile)
+
+  x = 0
+  y = 0
+  while True:
+    vector.set_font_size(cur_size)
+    x,y,cur_width,cur_height = vector.measure_text(config["text"])
+    print(config["font"],x,y,cur_width,cur_height)
+    if cur_width >= config["max_width"]:
+      cur_size -= 1
+    else:
+      break
+
+  return {
+    "size": cur_size,
+    "width": cur_width,
+    "height": cur_height,
+    "x_offset": -x,
+    "y_offset": -y,
+  }
+
+def draw_text_bitmap(display,config):
+  display.text(
+    config["text"],
+    int(config["x_pos"])+int(config["x_offset"]),
+    int(config["y_pos"])+int(config["y_offset"]),
+    int(WIDTH),
+    int(config["size"])
+  )
 
 def draw_text(display,config):
   # print(config)
+  display.set_pen(config["color"])
   if not "font" in config:
     display.set_font("bitmap8")
-  display.set_pen(config["color"])
-  display.text(config["text"], int(config["x_pos"]), int(config["y_pos"]), int(WIDTH), int(config["size"]))
+    return draw_text_bitmap(display,config)
+  elif config["font"].startswith("bitmap"):
+    display.set_font(config["font"])
+    return draw_text_bitmap(display,config)
+
+  if not vector or not transform:
+    init_vector()
+
+  fontfile = "fonts/"+config["font"]+".af"
+  try:
+    vector.set_font(fontfile, int(config["size"]))
+  except OSError:
+    print("font file %s could not be loaded" % fontfile)
+
+  print(config)
+  vector.text(
+    config["text"],
+    int(config["x_pos"]+config["x_offset"]),
+    int(config["y_pos"]+config["y_offset"]+config["height"]),
+  )
 
 def load_badge(filename = "badge.txt"):
   # Read name from file
