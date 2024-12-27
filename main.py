@@ -6,6 +6,7 @@ from os import listdir
 from picographics import PicoGraphics, DISPLAY_TUFTY_2040, PEN_RGB332
 from pimoroni import Button
 
+DEFAULTENTRY="rg_badge.py"
 
 def hsv_to_rgb(h: float, s: float, v: float) -> tuple[float, float, float]:
     if s == 0.0:
@@ -38,7 +39,7 @@ def get_applications() -> list[dict[str, str]]:
     # fetch a list of the applications that are stored in the filesystem
     applications = []
     for file in listdir():
-        if file.endswith(".py") and file != "main.py":
+        if file.endswith(".py") and file != "main.py" and file != "includes.py":
             # convert the filename from "something_or_other.py" to "Something Or Other"
             # via weird incantations and a sprinkling of voodoo
             title = " ".join([v[:1].upper() + v[1:] for v in file[:-3].split("_")])
@@ -66,6 +67,12 @@ def prepare_for_launch() -> None:
 def menu() -> str:
     applications = get_applications()
 
+    # find default entry and use it
+    defaultentry = 2
+    for i in range(len(applications)):
+       if applications[i]['file'] == DEFAULTENTRY:
+         defaultentry = i
+
     button_up = Button(22, invert=False)
     button_down = Button(6, invert=False)
     button_a = Button(7, invert=False)
@@ -75,9 +82,9 @@ def menu() -> str:
     display = PicoGraphics(display=DISPLAY_TUFTY_2040, pen_type=PEN_RGB332)
     display.set_backlight(1.0)
 
-    selected_item = 2
-    scroll_position = 2
-    target_scroll_position = 2
+    selected_item = defaultentry
+    scroll_position = defaultentry
+    target_scroll_position = defaultentry
 
     selected_pen = display.create_pen(255, 255, 255)
     unselected_pen = display.create_pen(80, 80, 100)
