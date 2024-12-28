@@ -33,7 +33,7 @@ vector = False
 transform = False
 def init_vector():
   global vector,transform
-  from picovector import PicoVector, Transform, ANTIALIAS_BEST
+  from picovector import PicoVector, ANTIALIAS_BEST
   vector = PicoVector(display)
   transform = Transform()
   vector.set_transform(transform)
@@ -58,7 +58,7 @@ def measure_text_bitmap(display,config):
     "y_offset": 0,
   }
 
-def measure_text(display,config):
+def measure_text(display, config):
   if not "font" in config:
     display.set_font("bitmap8")
     return measure_text_bitmap(display,config)
@@ -152,6 +152,12 @@ def load_badge(filename = "badge.txt"):
   except:
     pronouns = ""
 
+  # Try reading the dect
+  try:
+    dect = file.readline().strip()
+  except:
+    dect = ""
+    
   # Try reading the social
   try:
     social = file.readline().strip()
@@ -160,7 +166,7 @@ def load_badge(filename = "badge.txt"):
 
   file.close()
 
-  return name, pronouns, social
+  return name, pronouns, dect, social
 
 ### Powermanagement / Brightness from here on
 import time

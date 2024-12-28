@@ -8,6 +8,9 @@ POWERMANAGEMENT = True
 BACKGROUND_COLOR = BLACK
 LOGO_OFFSET_Y = 20
 
+VECTORIZE = True
+
+
 # 38C3 Colors
 # Primary - Coral Red - #FF5053
 CORAL_RED_38C3 = display.create_pen(255, 80, 83)
@@ -26,6 +29,7 @@ DARK_AUBERGINE_38C3 = display.create_pen(25, 11, 47)
 
 name_config = {
   "font": "Pilowlava-Regular",
+  "font-size": 50,
   "color": CORAL_RED_38C3,
   "max_size": 120,
   "max_width": WIDTH/2,
@@ -33,8 +37,20 @@ name_config = {
   "y_pos": 0,
 }
 
+
+dect_config = {
+  "font": "spacegrotesk-regular",
+  "font-size": 22,
+  "color": CORAL_RED_38C3,
+  "max_size": 120,
+  "max_width": WIDTH/2,
+  "x_pos": WIDTH/2,
+  "y_pos": 80,
+}
+
 pronouns_config = {
-  "font": "SpaceMono-Regular",
+  "font": "spacegrotesk-regular",
+  "font-size": 22,
   "color": AMETHYST_38C3,
   "max_size": 120,
   "max_width": WIDTH/2,
@@ -43,7 +59,8 @@ pronouns_config = {
 }
 
 social_config = {
-  "font": "SpaceMono-Regular",
+  "font": "spacegrotesk-regular",
+  "font-size": 22,
   "color": AMETHYST_38C3,
   "max_size": 120,
   "max_width": WIDTH/2+40,
@@ -54,17 +71,20 @@ social_config = {
 ###
 
 # load badge entries from file
-name_config["text"], pronouns_config["text"], social_config["text"] = load_badge()
+name_config["text"], pronouns_config["text"], dect_config["text"], social_config["text"] = load_badge()
 
 # calculate sizes of texts
 name_config.update(measure_text(display,name_config))
 pronouns_config.update(measure_text(display,pronouns_config))
+dect_config.update(measure_text(display,dect_config))
 social_config.update(measure_text(display,social_config))
 
 # position texts relative to each other
 name_config["x_pos"] = (WIDTH-name_config["width"])/2
 pronouns_config["x_pos"] = WIDTH-pronouns_config["width"]
 pronouns_config["y_pos"] = 0+(name_config["height"])
+dect_config["x_pos"] = (WIDTH-dect_config["width"])/2
+dect_config["y_pos"] = HEIGHT-(dect_config["height"])
 social_config["x_pos"] = (WIDTH-social_config["width"])/2
 social_config["y_pos"] = HEIGHT-(social_config["height"])
 
@@ -86,6 +106,7 @@ except OSError:
 # draw the texts as configured
 draw_text(display,name_config)
 draw_text(display,pronouns_config)
+draw_text(display,dect_config)
 draw_text(display,social_config)
 
 # Once all the adjusting and drawing is done, update the display.
